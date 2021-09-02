@@ -1,0 +1,2 @@
+# receipts
+Manage cooking ideas
