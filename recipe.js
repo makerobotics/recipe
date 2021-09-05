@@ -9,16 +9,24 @@ window.webkitIDBTransaction || window.msIDBTransaction;
 window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || 
 window.msIDBKeyRange
 
+var recipeName = ""
+
+document.addEventListener('DOMContentLoaded', function() {
+   recipeName = document.getElementById("name");
+   //console.log(recipeName.value);
+}, false);
+
 if (!window.indexedDB) {
    window.alert("Your browser doesn't support a stable version of IndexedDB.")
 }
 
-const employeeData = [
-   { id: "00-01", name: "gopal", age: 35, email: "gopal@tutorialspoint.com" },
-   { id: "00-02", name: "prasad", age: 32, email: "prasad@tutorialspoint.com" }
+const recipeData = [
+//   { name: "first", ingredients: "meet", description: "this", lastCook: "", rating: 0, favorite: 0, tags: "" },
+//   { name: "second", ingredients: "meet2", description: "that", lastCook: "", rating: 0, favorite: 0, tags: "" }
 ];
+
 var db;
-var request = window.indexedDB.open("newDatabase", 1);
+var request = window.indexedDB.open("newDatabase", 4);
 
 request.onerror = function(event) {
    console.log("error: ");
@@ -31,67 +39,72 @@ request.onsuccess = function(event) {
 
 request.onupgradeneeded = function(event) {
    var db = event.target.result;
-   var objectStore = db.createObjectStore("employee", {keyPath: "id"});
+   var objectStore = db.createObjectStore("recipe", {keyPath: "name"});
    
-   for (var i in employeeData) {
-      objectStore.add(employeeData[i]);
+   console.log("onupgradeneeded");
+   for (var i in recipeData) {
+      objectStore.add(recipeData[i]);
    }
 }
 
 function read() {
-   var transaction = db.transaction(["employee"]);
-   var objectStore = transaction.objectStore("employee");
-   var request = objectStore.get("00-03");
+   var transaction = db.transaction(["recipe"]);
+   var objectStore = transaction.objectStore("recipe");
+   console.log(recipeName.value);
+   var request = objectStore.get(recipeName.value);
    
    request.onerror = function(event) {
-      alert("Unable to retrieve daa from database!");
+      console.log("Unable to retrieve data from database!");
    };
    
    request.onsuccess = function(event) {
       // Do something with the request.result!
       if(request.result) {
-         alert("Name: " + request.result.name + ", Age: " + request.result.age + ", Email: " + request.result.email);
+         console.log("Name: " + request.result.name + ", lastCook: " + request.result.lastCook + ", rating: " + request.result.rating);
       } else {
-         alert("Kenny couldn't be found in your database!");
+         console.log(recipeName.value+" couldn't be found in your database!");
       }
    };
 }
 
 function readAll() {
-   var objectStore = db.transaction("employee").objectStore("employee");
+   var objectStore = db.transaction("recipe").objectStore("recipe");
    
    objectStore.openCursor().onsuccess = function(event) {
       var cursor = event.target.result;
       
       if (cursor) {
-         alert("Name for id " + cursor.key + " is " + cursor.value.name + ", Age: " + cursor.value.age + ", Email: " + cursor.value.email);
+         console.log("Name for id " + cursor.key + " is " + cursor.value.ingredients + ", lastCook: " + cursor.value.lastCook + ", rating: " + cursor.value.rating);
          cursor.continue();
       } else {
-         alert("No more entries!");
+         console.log("No more entries!");
       }
    };
 }
 
 function add() {
-   var request = db.transaction(["employee"], "readwrite")
-   .objectStore("employee")
-   .add({ id: "00-03", name: "Kenny", age: 19, email: "kenny@planet.org" });
+   var now = new Date();
+   var thisDate = new Date();
+   thisDate.setDate(now.getDate());
+   var request = db.transaction(["recipe"], "readwrite")
+   .objectStore("recipe")
+   .add({ name: recipeName.value, ingredients: "plenty", description: "bla bla", lastCook: thisDate.toLocaleDateString('en-CA'), rating: 5, favorite: 1, tags: "Midi, vegetarien" });
    
    request.onsuccess = function(event) {
-      alert("Kenny has been added to your database.");
+      console.log(recipeName.value+" has been added to your database.");
    };
    
    request.onerror = function(event) {
-      alert("Unable to add data\r\nKenny is aready exist in your database! ");
+      console.log("Unable to add data\r\n"+recipeName.value+" already exists in your database! ");
    }
 }
 
 function remove() {
-   var request = db.transaction(["employee"], "readwrite")
-   .objectStore("employee")
-   .delete("00-03");
+   var request = db.transaction(["recipe"], "readwrite")
+   .objectStore("recipe")
+   .delete(recipeName.value);
    
    request.onsuccess = function(event) {
-      alert("Kenny's entry has been removed from your database.");
+      console.log("entry "+recipeName.value+" has been removed from your database.");
    };
 }
