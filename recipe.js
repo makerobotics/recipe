@@ -47,6 +47,10 @@ request.onupgradeneeded = function(event) {
    }
 }
 
+function init() {
+   document.getElementById("export").value = "";
+}
+
 function read() {
    var transaction = db.transaction(["recipe"]);
    var objectStore = transaction.objectStore("recipe");
@@ -107,4 +111,49 @@ function remove() {
    request.onsuccess = function(event) {
       console.log("entry "+recipeName.value+" has been removed from your database.");
    };
+}
+
+function exportData() {
+   var objectStore = db.transaction("recipe").objectStore("recipe");
+   var txt_export = document.getElementById("export");
+   txt_export.value = "[";
+   let firstelement = 0;
+
+   objectStore.openCursor().onsuccess = function(event) {
+      var cursor = event.target.result;
+      
+      if (cursor) {
+         if(firstelement == 0){
+            firstelement = 1;
+         }
+         else{
+            txt_export.value += ",\n";
+         }
+         txt_export.value += JSON.stringify(cursor.value);
+         cursor.continue();
+      } else {
+         console.log("No more entries!");
+         txt_export.value += "]";
+      }
+   };  
+}
+
+function importData() {
+   var objectStore = db.transaction("recipe").objectStore("recipe");
+   var importstring = document.getElementById("export").value;
+   console.log(importstring);
+
+   var obj = JSON.parse(importstring);
+
+   var request = db.transaction(["recipe"], "readwrite")
+   .objectStore("recipe")
+   .add(obj[0]);
+   
+   request.onsuccess = function(event) {
+      console.log(recipeName.value+" has been added to your database.");
+   };
+   
+   request.onerror = function(event) {
+      console.log("Unable to add data\r\n"+recipeName.value+" already exists in your database! ");
+   }
 }
