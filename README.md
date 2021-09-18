@@ -1,2 +1,2 @@
-# receipts
+# recipts
 Manage cooking ideas

@@ -6,16 +6,51 @@
     <link rel='stylesheet' type='text/css' media='screen' href='recipe.css'>
     <script src='recipe.js'></script>
 </head>
-<body>
+<body onload="init()">
     <div>
         <label for="name">name:</label>
         <br>
-        <textarea id="name" name="name" rows="4" cols="50"></textarea> 
+        <textarea id="name" name="name" rows="4" cols="50"></textarea>
+        <br>
+        <label for="export">import/export:</label>
+        <br>
+        <textarea id="export" name="export" rows="4" cols="50"></textarea> 
         <br>
         <button onclick = "read()">Read </button>
         <button onclick = "readAll()">Read all </button>
         <button onclick = "add()">Add data </button>
         <button onclick = "remove()">Delete data </button>
+        <button onclick = "importData()">Import data </button>
+        <button onclick = "exportData()">Export data </button>
     </div>
+	
+	<br><br>
+	
+	<input type="text" id="table_input_recipes" onkeyup="table_search_recipes()" placeholder="Search for recipes..">
+	<input type="text" id="table_input_ingredients" onkeyup="table_search_ingredients()" placeholder="Search for ingredients..">
+
+	<table id="main_table">
+		<tr class="header">
+		<th style="width:60%;">Recipe</th>
+		<th style="width:40%;">Ingredients</th>
+		</tr>
+		
+		<tr>
+			<td>Lasagne</td>
+			<td>tomate, nouilles, etc.</td>
+		</tr>
+		<tr>
+			<td>Spagetti</td>
+			<td>nouilles</td>
+		</tr>
+		<tr>
+			<td>Bourittos</td>
+			<td>gallettes, etc.</td>
+		</tr>
+		<tr>
+			<td>Spätzle</td>
+			<td>Schnürtz</td>
+		</tr>
+	</table>
 </body>
 </html>

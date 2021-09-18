@@ -47,6 +47,10 @@ request.onupgradeneeded = function(event) {
    }
 }
 
+function init() {
+   document.getElementById("export").value = "";
+}
+
 function read() {
    var transaction = db.transaction(["recipe"]);
    var objectStore = transaction.objectStore("recipe");
@@ -107,4 +111,94 @@ function remove() {
    request.onsuccess = function(event) {
       console.log("entry "+recipeName.value+" has been removed from your database.");
    };
+}
+
+
+function table_search_recipes() {
+	var input, filter, table, tr, td, i, txtValue;
+	input = document.getElementById("table_input_recipes");
+	filter = input.value.toUpperCase();
+	table = document.getElementById("main_table");
+	tr = table.getElementsByTagName("tr");
+
+	// Loop through all table rows, and hide those who don't match the search query
+	for (i = 0; i < tr.length; i++) {
+		td = tr[i].getElementsByTagName("td")[0];
+		if (td) {
+			txtValue = td.textContent || td.innerText;
+			if (txtValue.toUpperCase().indexOf(filter) > -1) {
+				tr[i].style.display = "";
+			} else {
+				tr[i].style.display = "none";
+			}
+		}
+	}
+}
+
+function table_search_ingredients() {
+	var input, filter, table, tr, td, i, txtValue;
+	input = document.getElementById("table_input_ingredients");
+	filter = input.value.toUpperCase();
+	table = document.getElementById("main_table");
+	tr = table.getElementsByTagName("tr");
+
+	// Loop through all table rows, and hide those who don't match the search query
+	for (i = 0; i < tr.length; i++) {
+		td = tr[i].getElementsByTagName("td")[1];
+		if (td) {
+			txtValue = td.textContent || td.innerText;
+			if (txtValue.toUpperCase().indexOf(filter) > -1) {
+				tr[i].style.display = "";
+			} else {
+				tr[i].style.display = "none";
+			}
+		}
+	}
+}
+
+
+function exportData() {
+   var objectStore = db.transaction("recipe").objectStore("recipe");
+   var txt_export = document.getElementById("export");
+   txt_export.value = "[";
+   let firstelement = 0;
+
+   objectStore.openCursor().onsuccess = function(event) {
+      var cursor = event.target.result;
+      
+      if (cursor) {
+         if(firstelement == 0){
+            firstelement = 1;
+         }
+         else{
+            txt_export.value += ",\n";
+         }
+         txt_export.value += JSON.stringify(cursor.value);
+         cursor.continue();
+      } else {
+         console.log("No more entries!");
+         txt_export.value += "]";
+      }
+   };  
+}
+
+function importData() {
+   var objectStore = db.transaction("recipe").objectStore("recipe");
+   var importstring = document.getElementById("export").value;
+   console.log(importstring);
+
+   var obj = JSON.parse(importstring);
+
+   var request = db.transaction(["recipe"], "readwrite")
+   .objectStore("recipe")
+   .add(obj[0]);
+   
+   request.onsuccess = function(event) {
+      console.log(recipeName.value+" has been added to your database.");
+   };
+   
+   request.onerror = function(event) {
+      console.log("Unable to add data\r\n"+recipeName.value+" already exists in your database! ");
+   }
+
 }

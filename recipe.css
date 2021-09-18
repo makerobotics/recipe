@@ -1,1 +1,48 @@
-test
+#table_input_recipes {
+	background-image: 'search_icon.png'; 
+	background-position: 10px 12px; 
+	background-repeat: no-repeat; 
+	width: 60%; 
+	font-size: 16px; 
+	padding: 12px 20px 12px 40px; 
+	border: 1px solid #ddd; 
+	margin-bottom: 12px; 
+	float: left;
+	font-family: 'Courier New', monospace;
+	
+}
+
+#table_input_ingredients {
+	background-image: 'search_icon.png'; 
+	background-position: 10px 12px; 
+	background-repeat: no-repeat; 
+	width: 40%; 
+	font-size: 16px; 
+	padding: 12px 20px 12px 40px; 
+	border: 1px solid #ddd; 
+	margin-bottom: 12px; 
+	float: left;
+	font-family: 'Courier New', monospace;
+	
+}
+
+#main_table {
+	border-collapse: collapse; 
+	width: 100%; 
+	border: 1px solid #ddd; 
+	font-size: 18px; 
+	font-family: 'Courier New', monospace;
+}
+
+#main_table th, #main_table td {
+	text-align: left; 
+	padding: 12px; 
+}
+
+#main_table tr {
+	border-bottom: 1px solid #ddd;
+}
+
+#main_table tr.header, #main_table tr:hover {
+	background-color: #f1f1f1;
+}
