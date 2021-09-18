@@ -157,6 +157,7 @@ function table_search_ingredients() {
 }
 
 
+
 function exportData() {
    var objectStore = db.transaction("recipe").objectStore("recipe");
    var txt_export = document.getElementById("export");
@@ -200,5 +201,4 @@ function importData() {
    request.onerror = function(event) {
       console.log("Unable to add data\r\n"+recipeName.value+" already exists in your database! ");
    }
-
 }
