@@ -49,8 +49,39 @@ request.onupgradeneeded = function(event) {
 
 function init() {
    document.getElementById("export").value = "";
+   readAll();
+   //highlight_row();
 }
+/*
+function highlight_row() {
+   var cells = table.getElementsByTagName('td');
+   var input, filter, table, tr, td, i, txtValue;
+	table = document.getElementById("main_table");
 
+   for (var i = 0; i < cells.length; i++) {
+       // Take each cell
+       var cell = cells[i];
+       // do something on onclick event for cell
+       cell.onclick = function () {
+           // Get the row id where the cell exists
+           var rowId = this.parentNode.rowIndex;
+
+           var rowsNotSelected = table.getElementsByTagName('tr');
+           for (var row = 0; row < rowsNotSelected.length; row++) {
+               rowsNotSelected[row].style.backgroundColor = "";
+               rowsNotSelected[row].classList.remove('selected');
+           }
+           var rowSelected = table.getElementsByTagName('tr')[rowId];
+           rowSelected.style.backgroundColor = "yellow";
+           rowSelected.className += " selected";
+
+           msg = 'The ID of the company is: ' + rowSelected.cells[0].innerHTML;
+           msg += '\nThe cell value is: ' + this.innerHTML;
+           alert(msg);
+       }
+   }
+}
+*/
 function read() {
    var transaction = db.transaction(["recipe"]);
    var objectStore = transaction.objectStore("recipe");
@@ -79,11 +110,37 @@ function readAll() {
       
       if (cursor) {
          console.log("Name for id " + cursor.key + " is " + cursor.value.ingredients + ", lastCook: " + cursor.value.lastCook + ", rating: " + cursor.value.rating);
+         addRow(cursor.key,cursor.value.ingredients);
          cursor.continue();
       } else {
          console.log("No more entries!");
       }
    };
+}
+
+function addRow(col1, col2){
+   var input, filter, table, tr, td, i, txtValue;
+	input = document.getElementById("table_input_recipes");
+	filter = input.value.toUpperCase();
+	table = document.getElementById("main_table");
+	tr = table.getElementsByTagName("tr");
+   
+   // Create an empty <tr> element and add it to the 1st position of the table:
+   var row = table.insertRow(1);
+
+   // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
+   var cell1 = row.insertCell(0);
+   var cell2 = row.insertCell(1);
+
+   // Add some text to the new cells:
+   cell1.innerHTML = col1;
+   cell2.innerHTML = col2; 
+}
+
+function deleteRow(r) {
+   var table = document.getElementById("main_table");
+	var i = r.parentNode.parentNode.rowIndex;
+   table.deleteRow(i);
 }
 
 function add() {
@@ -96,6 +153,7 @@ function add() {
    
    request.onsuccess = function(event) {
       console.log(recipeName.value+" has been added to your database.");
+      addRow(recipeName.value, "added row");
    };
    
    request.onerror = function(event) {
