@@ -27,7 +27,6 @@ const recipeData = [
 
 var db;
 var request = window.indexedDB.open("newDatabase", 4);
-
 request.onerror = function(event) {
    console.log("error: ");
 };
@@ -35,10 +34,12 @@ request.onerror = function(event) {
 request.onsuccess = function(event) {
    db = request.result;
    console.log("success: "+ db);
+   // Read data on load only as the data is available (bug in early version)
+   readAll();
 };
 
 request.onupgradeneeded = function(event) {
-   var db = event.target.result;
+   db = event.target.result;
    var objectStore = db.createObjectStore("recipe", {keyPath: "name"});
    
    console.log("onupgradeneeded");
@@ -49,7 +50,6 @@ request.onupgradeneeded = function(event) {
 
 function init() {
    document.getElementById("export").value = "";
-   readAll();
    //highlight_row();
 }
 /*
