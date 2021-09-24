@@ -19,7 +19,7 @@
         <button onclick = "read()">Read </button>
         <button onclick = "readAll()">Read all </button>
         <button onclick = "add()">Add data </button>
-        <button onclick = "remove()">Delete data </button>
+        <button onclick = "deleteRow()">Delete data </button>
         <button onclick = "importData()">Import data </button>
         <button onclick = "exportData()">Export data </button>
     </div>
@@ -29,7 +29,7 @@
 	<input type="text" id="table_input_recipes" onkeyup="table_search_recipes()" placeholder="Search for recipes..">
 	<input type="text" id="table_input_ingredients" onkeyup="table_search_ingredients()" placeholder="Search for ingredients..">
 
-	<table id="main_table">
+	<table id="main_table" onchange="tablechange()">
 		<tr class="header">
 		<th style="width:60%;">Recipe</th>
 		<th style="width:40%;">Ingredients</th>

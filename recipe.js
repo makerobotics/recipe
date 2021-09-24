@@ -10,6 +10,7 @@ window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange ||
 window.msIDBKeyRange
 
 var recipeName = ""
+var selectedRow = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
    recipeName = document.getElementById("name");
@@ -25,6 +26,10 @@ const recipeData = [
 //   { name: "second", ingredients: "meet2", description: "that", lastCook: "", rating: 0, favorite: 0, tags: "" }
 ];
 
+function meineFunktion() {
+   highlight_row();
+ }
+
 var db;
 var request = window.indexedDB.open("newDatabase", 4);
 request.onerror = function(event) {
@@ -36,6 +41,7 @@ request.onsuccess = function(event) {
    console.log("success: "+ db);
    // Read data on load only as the data is available (bug in early version)
    readAll();
+   setTimeout(meineFunktion, 500);
 };
 
 request.onupgradeneeded = function(event) {
@@ -48,44 +54,50 @@ request.onupgradeneeded = function(event) {
    }
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+   console.log( 'Content was loaded' );
+});
+
+// Todo: remove
+function tablechange(event) {
+   console.log(event);
+}
+
 function init() {
    document.getElementById("export").value = "";
-   //highlight_row();
 }
-/*
-function highlight_row() {
-   var cells = table.getElementsByTagName('td');
-   var input, filter, table, tr, td, i, txtValue;
-	table = document.getElementById("main_table");
 
+function highlight_row() {
+   const table = document.getElementById("main_table");
+   var cells = table.getElementsByTagName('td');
+   var input, filter, tr, td, i, txtValue;
+	
    for (var i = 0; i < cells.length; i++) {
        // Take each cell
        var cell = cells[i];
        // do something on onclick event for cell
        cell.onclick = function () {
-           // Get the row id where the cell exists
-           var rowId = this.parentNode.rowIndex;
-
-           var rowsNotSelected = table.getElementsByTagName('tr');
-           for (var row = 0; row < rowsNotSelected.length; row++) {
-               rowsNotSelected[row].style.backgroundColor = "";
-               rowsNotSelected[row].classList.remove('selected');
-           }
-           var rowSelected = table.getElementsByTagName('tr')[rowId];
-           rowSelected.style.backgroundColor = "yellow";
-           rowSelected.className += " selected";
-
-           msg = 'The ID of the company is: ' + rowSelected.cells[0].innerHTML;
-           msg += '\nThe cell value is: ' + this.innerHTML;
-           alert(msg);
+            // Get the row id where the cell exists
+            var rowId = this.parentNode.rowIndex;
+            //console.log(rowId);
+            selectedRow = rowId;
+            var rowsNotSelected = table.getElementsByTagName('tr');
+            for (var row = 0; row < rowsNotSelected.length; row++) {
+                rowsNotSelected[row].style.backgroundColor = "";
+                rowsNotSelected[row].classList.remove('selected');
+            }
+            var rowSelected = table.getElementsByTagName('tr')[rowId];
+            rowSelected.style.backgroundColor = "yellow";
+            rowSelected.className += " selected";
        }
    }
 }
-*/
+
 function read() {
    var transaction = db.transaction(["recipe"]);
    var objectStore = transaction.objectStore("recipe");
    console.log(recipeName.value);
+   recipeName.value = document.getElementById("main_table").rows[selectedRow].cells[0].innerText;
    var request = objectStore.get(recipeName.value);
    
    request.onerror = function(event) {
@@ -137,10 +149,17 @@ function addRow(col1, col2){
    cell2.innerHTML = col2; 
 }
 
-function deleteRow(r) {
+function deleteRow() {
    var table = document.getElementById("main_table");
-	var i = r.parentNode.parentNode.rowIndex;
-   table.deleteRow(i);
+	recipeName.value = document.getElementById("main_table").rows[selectedRow].cells[0].innerText;
+   var request = db.transaction(["recipe"], "readwrite")
+   .objectStore("recipe")
+   .delete(recipeName.value);
+   
+   request.onsuccess = function(event) {
+      console.log("entry "+recipeName.value+" has been removed from your database.");
+   };
+   table.deleteRow(selectedRow);
 }
 
 function add() {
@@ -160,17 +179,6 @@ function add() {
       console.log("Unable to add data\r\n"+recipeName.value+" already exists in your database! ");
    }
 }
-
-function remove() {
-   var request = db.transaction(["recipe"], "readwrite")
-   .objectStore("recipe")
-   .delete(recipeName.value);
-   
-   request.onsuccess = function(event) {
-      console.log("entry "+recipeName.value+" has been removed from your database.");
-   };
-}
-
 
 function table_search_recipes() {
 	var input, filter, table, tr, td, i, txtValue;
