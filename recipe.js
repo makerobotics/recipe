@@ -93,27 +93,6 @@ function highlight_row() {
    }
 }
 
-function read() {
-   var transaction = db.transaction(["recipe"]);
-   var objectStore = transaction.objectStore("recipe");
-   console.log(recipeName.value);
-   recipeName.value = document.getElementById("main_table").rows[selectedRow].cells[0].innerText;
-   var request = objectStore.get(recipeName.value);
-   
-   request.onerror = function(event) {
-      console.log("Unable to retrieve data from database!");
-   };
-   
-   request.onsuccess = function(event) {
-      // Do something with the request.result!
-      if(request.result) {
-         console.log("Name: " + request.result.name + ", lastCook: " + request.result.lastCook + ", rating: " + request.result.rating);
-      } else {
-         console.log(recipeName.value+" couldn't be found in your database!");
-      }
-   };
-}
-
 function readAll() {
    var objectStore = db.transaction("recipe").objectStore("recipe");
    
