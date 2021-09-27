@@ -10,11 +10,19 @@
     <div>
         <label for="name">name:</label>
         <br>
-        <textarea id="name" name="name" rows="4" cols="50"></textarea>
+        <textarea id="name" name="name" rows="1" cols="50"></textarea>
         <br>
-        <label for="export">import/export:</label>
+        <label for="ingredients">ingredients:</label>
         <br>
-        <textarea id="export" name="export" rows="4" cols="50"></textarea> 
+        <textarea id="ingredients" name="ingredients" rows="4" cols="50"></textarea>
+        <br>
+        <label for="description">description:</label>
+        <br>
+        <textarea id="description" name="description" rows="2" cols="50"></textarea>
+        <br>
+        <label for="lastcook">last cook:</label>
+        <br>
+        <textarea id="lastcook" name="lastcook" rows="1" cols="50"></textarea>
         <br>
         <button onclick = "add()">Add data </button>
         <button onclick = "deleteRow()">Delete data </button>
@@ -29,9 +37,15 @@
 
 	<table id="main_table" onchange="tablechange()">
 		<tr class="header">
-		<th style="width:60%;">Recipe</th>
+		<th style="width:20%;">Recipe</th>
+		<th style="width:20%;">Ingredients</th>
+        <th style="width:20%;">Recipe</th>
 		<th style="width:40%;">Ingredients</th>
 		</tr>
 	</table>
+    <br>
+    <label for="export">import/export:</label>
+    <br>
+    <textarea id="export" name="export" rows="4" cols="50"></textarea> 
 </body>
 </html>

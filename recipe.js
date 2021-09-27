@@ -26,10 +26,6 @@ const recipeData = [
 //   { name: "second", ingredients: "meet2", description: "that", lastCook: "", rating: 0, favorite: 0, tags: "" }
 ];
 
-function meineFunktion() {
-   highlight_row();
- }
-
 var db;
 var request = window.indexedDB.open("newDatabase", 4);
 request.onerror = function(event) {
@@ -41,7 +37,6 @@ request.onsuccess = function(event) {
    console.log("success: "+ db);
    // Read data on load only as the data is available (bug in early version)
    readAll();
-   setTimeout(meineFunktion, 500);
 };
 
 request.onupgradeneeded = function(event) {
@@ -67,32 +62,6 @@ function init() {
    document.getElementById("export").value = "";
 }
 
-function highlight_row() {
-   const table = document.getElementById("main_table");
-   var cells = table.getElementsByTagName('td');
-   var input, filter, tr, td, i, txtValue;
-	
-   for (var i = 0; i < cells.length; i++) {
-       // Take each cell
-       var cell = cells[i];
-       // do something on onclick event for cell
-       cell.onclick = function () {
-            // Get the row id where the cell exists
-            var rowId = this.parentNode.rowIndex;
-            //console.log(rowId);
-            selectedRow = rowId;
-            var rowsNotSelected = table.getElementsByTagName('tr');
-            for (var row = 0; row < rowsNotSelected.length; row++) {
-                rowsNotSelected[row].style.backgroundColor = "";
-                rowsNotSelected[row].classList.remove('selected');
-            }
-            var rowSelected = table.getElementsByTagName('tr')[rowId];
-            rowSelected.style.backgroundColor = "yellow";
-            rowSelected.className += " selected";
-       }
-   }
-}
-
 function readAll() {
    var objectStore = db.transaction("recipe").objectStore("recipe");
    
@@ -101,7 +70,7 @@ function readAll() {
       
       if (cursor) {
          console.log("Name for id " + cursor.key + " is " + cursor.value.ingredients + ", lastCook: " + cursor.value.lastCook + ", rating: " + cursor.value.rating);
-         addRow(cursor.key,cursor.value.ingredients);
+         addRow(cursor.key,cursor.value.ingredients, cursor.value.description, cursor.value.lastCook);
          cursor.continue();
       } else {
          console.log("No more entries!");
@@ -109,12 +78,16 @@ function readAll() {
    };
 }
 
-function addRow(col1, col2){
+function addRow(col1, col2, col3, col4){
    var input, filter, table, tr, td, i, txtValue;
 	input = document.getElementById("table_input_recipes");
 	filter = input.value.toUpperCase();
 	table = document.getElementById("main_table");
 	tr = table.getElementsByTagName("tr");
+   const name = document.getElementById("name");
+   const ingredients = document.getElementById("ingredients");
+   const description = document.getElementById("description");
+   const lastcook = document.getElementById("lastcook");
    
    // Create an empty <tr> element and add it to the 1st position of the table:
    var row = table.insertRow(1);
@@ -122,10 +95,34 @@ function addRow(col1, col2){
    // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
    var cell1 = row.insertCell(0);
    var cell2 = row.insertCell(1);
+   var cell3 = row.insertCell(2);
+   var cell4 = row.insertCell(3);
 
    // Add some text to the new cells:
    cell1.innerHTML = col1;
-   cell2.innerHTML = col2; 
+   cell2.innerHTML = col2;
+   cell3.innerHTML = col3;
+   cell4.innerHTML = col4;
+
+   cell1.onclick = function () {
+      // Get the row id where the cell exists
+      var rowId = this.parentNode.rowIndex;
+      //console.log(rowId);
+      selectedRow = rowId;
+      var rowsNotSelected = table.getElementsByTagName('tr');
+      for (var row = 0; row < rowsNotSelected.length; row++) {
+          rowsNotSelected[row].style.backgroundColor = "";
+          rowsNotSelected[row].classList.remove('selected');
+      }
+      var rowSelected = table.getElementsByTagName('tr')[rowId];
+      rowSelected.style.backgroundColor = "yellow";
+      rowSelected.className += " selected";
+
+      name.value = col1;
+      ingredients.value = col2;
+      description.value = col3;
+      lastcook.value = col4;
+   }
 }
 
 function deleteRow() {
@@ -145,6 +142,10 @@ function add() {
    var now = new Date();
    var thisDate = new Date();
    thisDate.setDate(now.getDate());
+   const name = document.getElementById("name");
+   const ingredients = document.getElementById("ingredients");
+   const description = document.getElementById("description");
+   const lastcook = document.getElementById("lastcook");
    var request = db.transaction(["recipe"], "readwrite")
    .objectStore("recipe")
    .add({ name: recipeName.value, ingredients: "plenty", description: "bla bla", lastCook: thisDate.toLocaleDateString('en-CA'), rating: 5, favorite: 1, tags: "Midi, vegetarien" });
