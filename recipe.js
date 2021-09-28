@@ -55,6 +55,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function init() {
    document.getElementById("export").value = "";
+   document.getElementById("name").value = "";
+   document.getElementById("ingredients").value = "";
+   document.getElementById("description").value = "";
+   document.getElementById("lastcook").value = "";
 }
 
 function readAll() {
