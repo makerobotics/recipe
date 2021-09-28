@@ -53,11 +53,6 @@ document.addEventListener('DOMContentLoaded', function () {
    console.log( 'Content was loaded' );
 });
 
-// Todo: remove
-function tablechange(event) {
-   console.log(event);
-}
-
 function init() {
    document.getElementById("export").value = "";
 }
@@ -69,7 +64,7 @@ function readAll() {
       var cursor = event.target.result;
       
       if (cursor) {
-         console.log("Name for id " + cursor.key + " is " + cursor.value.ingredients + ", lastCook: " + cursor.value.lastCook + ", rating: " + cursor.value.rating);
+         //console.log("Name for id " + cursor.key + " is " + cursor.value.ingredients + ", lastCook: " + cursor.value.lastCook + ", rating: " + cursor.value.rating);
          addRow(cursor.key,cursor.value.ingredients, cursor.value.description, cursor.value.lastCook);
          cursor.continue();
       } else {
@@ -148,11 +143,11 @@ function add() {
    const lastcook = document.getElementById("lastcook");
    var request = db.transaction(["recipe"], "readwrite")
    .objectStore("recipe")
-   .add({ name: recipeName.value, ingredients: "plenty", description: "bla bla", lastCook: thisDate.toLocaleDateString('en-CA'), rating: 5, favorite: 1, tags: "Midi, vegetarien" });
+   .add({ name: recipeName.value, ingredients: ingredients.value, description: description.value, lastCook: thisDate.toLocaleDateString('en-CA'), rating: 5, favorite: 1, tags: "Midi, vegetarien" });
    
    request.onsuccess = function(event) {
       console.log(recipeName.value+" has been added to your database.");
-      addRow(recipeName.value, "added row");
+      addRow(recipeName.value, ingredients.value, description.value, lastcook.value);
    };
    
    request.onerror = function(event) {
