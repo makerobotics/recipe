@@ -1,4 +1,3 @@
-
 //prefixes of implementation that we want to test
 window.indexedDB = window.indexedDB || window.mozIndexedDB || 
 window.webkitIndexedDB || window.msIndexedDB;
@@ -14,7 +13,7 @@ var selectedRow = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
    recipeName = document.getElementById("name");
-   //console.log(recipeName.value);
+   //console.log( 'Content was loaded' );
 }, false);
 
 if (!window.indexedDB) {
@@ -33,10 +32,9 @@ request.onerror = function(event) {
 };
 
 request.onsuccess = function(event) {
+   // This is called as the database was opened
    db = request.result;
-   console.log("success: "+ db);
-   // Read data on load only as the data is available (bug in early version)
-   readAll();
+   readDataset();   
 };
 
 request.onupgradeneeded = function(event) {
@@ -49,11 +47,13 @@ request.onupgradeneeded = function(event) {
    }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-   console.log( 'Content was loaded' );
-});
+$(document).ready(function() {
+   console.log("READY");
+} );
+
 
 function init() {
+   console.log("INIT (on load body)");
    document.getElementById("export").value = "";
    document.getElementById("name").value = "";
    document.getElementById("ingredients").value = "";
@@ -61,18 +61,40 @@ function init() {
    document.getElementById("lastcook").value = "";
 }
 
-function readAll() {
+function readDataset(){
    var objectStore = db.transaction("recipe").objectStore("recipe");
-   
+   let dataset = [];
+   console.log("readDataset() - start");
    objectStore.openCursor().onsuccess = function(event) {
+      // Called each time the cursor was reading a new entry
       var cursor = event.target.result;
-      
+      //console.log("readDataset() - onsuccess");
+   
       if (cursor) {
-         //console.log("Name for id " + cursor.key + " is " + cursor.value.ingredients + ", lastCook: " + cursor.value.lastCook + ", rating: " + cursor.value.rating);
-         addRow(cursor.key,cursor.value.ingredients, cursor.value.description, cursor.value.lastCook);
+         let line = [];
+         line.push(cursor.value.name);
+         line.push(cursor.value.ingredients);
+         line.push(cursor.value.description);
+         line.push(cursor.value.lastCook);
+         line.push(cursor.value.rating);
+         line.push(cursor.value.favorite);
+         line.push(cursor.value.tags);
+         dataset.push(line);
          cursor.continue();
       } else {
          console.log("No more entries!");
+         $('#example').DataTable( {
+            data: dataset,
+            columns: [
+                { title: "name" },
+                { title: "ingredients" },
+                { title: "description" },
+                { title: "lastCook." },
+                { title: "rating" },
+                { title: "favorite" },
+                { title: "tags" }
+            ]
+        } );
       }
    };
 }
@@ -158,50 +180,6 @@ function add() {
       console.log("Unable to add data\r\n"+recipeName.value+" already exists in your database! ");
    }
 }
-
-function table_search_recipes() {
-	var input, filter, table, tr, td, i, txtValue;
-	input = document.getElementById("table_input_recipes");
-	filter = input.value.toUpperCase();
-	table = document.getElementById("main_table");
-	tr = table.getElementsByTagName("tr");
-
-	// Loop through all table rows, and hide those who don't match the search query
-	for (i = 0; i < tr.length; i++) {
-		td = tr[i].getElementsByTagName("td")[0];
-		if (td) {
-			txtValue = td.textContent || td.innerText;
-			if (txtValue.toUpperCase().indexOf(filter) > -1) {
-				tr[i].style.display = "";
-			} else {
-				tr[i].style.display = "none";
-			}
-		}
-	}
-}
-
-function table_search_ingredients() {
-	var input, filter, table, tr, td, i, txtValue;
-	input = document.getElementById("table_input_ingredients");
-	filter = input.value.toUpperCase();
-	table = document.getElementById("main_table");
-	tr = table.getElementsByTagName("tr");
-
-	// Loop through all table rows, and hide those who don't match the search query
-	for (i = 0; i < tr.length; i++) {
-		td = tr[i].getElementsByTagName("td")[1];
-		if (td) {
-			txtValue = td.textContent || td.innerText;
-			if (txtValue.toUpperCase().indexOf(filter) > -1) {
-				tr[i].style.display = "";
-			} else {
-				tr[i].style.display = "none";
-			}
-		}
-	}
-}
-
-
 
 function exportData() {
    var objectStore = db.transaction("recipe").objectStore("recipe");

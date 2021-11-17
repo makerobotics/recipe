@@ -4,6 +4,9 @@
     <title>Recipe</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='recipe.css'>
+    <link rel='stylesheet' type='text/css' media='screen' href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <script src='https://code.jquery.com/jquery-3.5.1.js'></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
     <script src='recipe.js'></script>
 </head>
 <body onload="init()">
@@ -29,7 +32,9 @@
     </div>
 	
 	<br><br>
-	
+    <table id="example" class="display" width="100%"></table>
+    <br><br>
+	<!--
 	<input type="text" id="table_input_recipes" onkeyup="table_search_recipes()" placeholder="Search for recipes..">
 	<input type="text" id="table_input_ingredients" onkeyup="table_search_ingredients()" placeholder="Search for ingredients..">
 
@@ -41,6 +46,7 @@
 		<th style="width:40%;">Ingredients</th>
 		</tr>
 	</table>
+    -->
     <br>
     <label for="export">import/export:</label>
     <br>
