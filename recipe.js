@@ -83,7 +83,7 @@ function readDataset(){
          cursor.continue();
       } else {
          console.log("No more entries!");
-         $('#example').DataTable( {
+         var t = $('#example').DataTable( {
             data: dataset,
             columns: [
                 { title: "name" },
@@ -95,68 +95,56 @@ function readDataset(){
                 { title: "tags" }
             ]
         } );
+
+        const name = document.getElementById("name");
+        const ingredients = document.getElementById("ingredients");
+        const description = document.getElementById("description");
+        const lastcook = document.getElementById("lastcook");
+
+        $('#addRow').on( 'click', function () {
+         t.row.add( [
+             name.value,
+             ingredients.value,
+             description.value,
+             lastcook.value,
+             "",
+             "",
+             ""
+         ] ).draw( false );
+         // Add data to database
+         add();
+         } );
+         $('#example tbody').on( 'click', 'tr', function () {
+            if ( $(this).hasClass('selected') ) {
+                $(this).removeClass('selected');
+            }
+            else {
+                t.$('tr.selected').removeClass('selected');
+                $(this).addClass('selected');
+                //console.log($(this).find("td:eq(0)").text());
+                //console.log($('tr.selected').find("td:eq(0)").text());
+            }
+        } );
+     
+        $('#delRow').click( function () {
+            console.log($('tr.selected').find("td:eq(0)").text());
+            // Remove selected row from DB
+            deleteRow($('tr.selected').find("td:eq(0)").text());
+            t.row('.selected').remove().draw( false );
+        } );
       }
    };
 }
 
-function addRow(col1, col2, col3, col4){
-   var input, filter, table, tr, td, i, txtValue;
-	input = document.getElementById("table_input_recipes");
-	filter = input.value.toUpperCase();
-	table = document.getElementById("main_table");
-	tr = table.getElementsByTagName("tr");
-   const name = document.getElementById("name");
-   const ingredients = document.getElementById("ingredients");
-   const description = document.getElementById("description");
-   const lastcook = document.getElementById("lastcook");
-   
-   // Create an empty <tr> element and add it to the 1st position of the table:
-   var row = table.insertRow(1);
-
-   // Insert new cells (<td> elements) at the 1st and 2nd position of the "new" <tr> element:
-   var cell1 = row.insertCell(0);
-   var cell2 = row.insertCell(1);
-   var cell3 = row.insertCell(2);
-   var cell4 = row.insertCell(3);
-
-   // Add some text to the new cells:
-   cell1.innerHTML = col1;
-   cell2.innerHTML = col2;
-   cell3.innerHTML = col3;
-   cell4.innerHTML = col4;
-
-   cell1.onclick = function () {
-      // Get the row id where the cell exists
-      var rowId = this.parentNode.rowIndex;
-      //console.log(rowId);
-      selectedRow = rowId;
-      var rowsNotSelected = table.getElementsByTagName('tr');
-      for (var row = 0; row < rowsNotSelected.length; row++) {
-          rowsNotSelected[row].style.backgroundColor = "";
-          rowsNotSelected[row].classList.remove('selected');
-      }
-      var rowSelected = table.getElementsByTagName('tr')[rowId];
-      rowSelected.style.backgroundColor = "yellow";
-      rowSelected.className += " selected";
-
-      name.value = col1;
-      ingredients.value = col2;
-      description.value = col3;
-      lastcook.value = col4;
-   }
-}
-
-function deleteRow() {
-   var table = document.getElementById("main_table");
-	recipeName.value = document.getElementById("main_table").rows[selectedRow].cells[0].innerText;
+function deleteRow(item) {
+   console.log(item);
    var request = db.transaction(["recipe"], "readwrite")
    .objectStore("recipe")
-   .delete(recipeName.value);
+   .delete(item);
    
    request.onsuccess = function(event) {
-      console.log("entry "+recipeName.value+" has been removed from your database.");
+      console.log("entry "+item+" has been removed from your database.");
    };
-   table.deleteRow(selectedRow);
 }
 
 function add() {
@@ -169,15 +157,15 @@ function add() {
    const lastcook = document.getElementById("lastcook");
    var request = db.transaction(["recipe"], "readwrite")
    .objectStore("recipe")
-   .add({ name: recipeName.value, ingredients: ingredients.value, description: description.value, lastCook: thisDate.toLocaleDateString('en-CA'), rating: 5, favorite: 1, tags: "Midi, vegetarien" });
+   .add({ name: name.value, ingredients: ingredients.value, description: description.value, lastCook: thisDate.toLocaleDateString('en-CA'), rating: 5, favorite: 1, tags: "Midi, vegetarien" });
    
    request.onsuccess = function(event) {
-      console.log(recipeName.value+" has been added to your database.");
-      addRow(recipeName.value, ingredients.value, description.value, lastcook.value);
+      console.log(name.value+" has been added to your database.");
+      //addRow(recipeName.value, ingredients.value, description.value, lastcook.value);
    };
    
    request.onerror = function(event) {
-      console.log("Unable to add data\r\n"+recipeName.value+" already exists in your database! ");
+      console.log("Unable to add data\r\n"+name.value+" already exists in your database! ");
    }
 }
 
