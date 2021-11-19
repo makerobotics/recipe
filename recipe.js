@@ -1,10 +1,11 @@
 var db;
+var dt;
 
 // Start here as the document is ready
 $(document).ready(function () {
    console.log("READY");
 
-   init();
+   //init();
 
    //prefixes of implementation that we want to test
    window.indexedDB = window.indexedDB || window.mozIndexedDB ||
@@ -72,7 +73,7 @@ function readDataset() {
       } else {
          console.log("No more entries!");
          // Now as data is available, we can fill the table
-         var t = $('#example').DataTable({
+         dt = $('#example').DataTable({
             data: dataset,
             columns: [
                { title: "name" },
@@ -84,42 +85,50 @@ function readDataset() {
                { title: "tags" }
             ]
          });
-
-         const name = document.getElementById("name");
-         const ingredients = document.getElementById("ingredients");
-         const description = document.getElementById("description");
-         const lastcook = document.getElementById("lastcook");
-
-         $('#addRow').on('click', function () {
-            t.row.add([
-               name.value,
-               ingredients.value,
-               description.value,
-               lastcook.value,
-               "",
-               "",
-               ""
-            ]).draw(false);
-            // Add data to database
-            add();
-         });
-         $('#example tbody').on('click', 'tr', function () {
-            if ($(this).hasClass('selected')) {
-               $(this).removeClass('selected');
-            }
-            else {
-               t.$('tr.selected').removeClass('selected');
-               $(this).addClass('selected');
-            }
-         });
-
-         $('#delRow').click(function () {
-            // Remove selected row from DB
-            deleteRow($('tr.selected').find("td:eq(0)").text());
-            t.row('.selected').remove().draw(false);
-         });
+         // Only add callbacks as table is loaded
+         tableCallbacks();
       }
    };
+}
+
+function tableCallbacks(){
+   const myname = document.getElementById("name");
+   const ingredients = document.getElementById("ingredients");
+   const description = document.getElementById("description");
+   const lastcook = document.getElementById("lastcook");
+   const rating = document.getElementById("rating");
+   const favorite = document.getElementById("favorite");
+   const tags = document.getElementById("tags");
+   
+   $('#addRow').on('click', function () {
+      dt.row.add([
+         myname.value,
+         ingredients.value,
+         description.value,
+         lastcook.value,
+         rating.value,
+         favorite.value,
+         tags.value
+      ]).draw(false);
+      // Add data to database
+      add();
+   });
+   
+   $('#delRow').click(function () {
+      // Remove selected row from DB
+      deleteRow($('tr.selected').find("td:eq(0)").text());
+      dt.row('.selected').remove().draw(false);
+   });
+   
+   $('#example tbody').on('click', 'tr', function () {
+      if ($(this).hasClass('selected')) {
+         $(this).removeClass('selected');
+      }
+      else {
+         dt.$('tr.selected').removeClass('selected');
+         $(this).addClass('selected');
+      }
+   });
 }
 
 function deleteRow(item) {
