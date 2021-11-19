@@ -85,8 +85,9 @@ function readDataset() {
                { title: "tags" }
             ]
          });
-         // Only add callbacks as table is loaded
+         // Add table callbacks only as table was created
          tableCallbacks();
+
       }
    };
 }
@@ -99,7 +100,7 @@ function tableCallbacks(){
    const rating = document.getElementById("rating");
    const favorite = document.getElementById("favorite");
    const tags = document.getElementById("tags");
-   
+
    $('#addRow').on('click', function () {
       dt.row.add([
          myname.value,
@@ -145,20 +146,26 @@ function add() {
    var now = new Date();
    var thisDate = new Date();
    thisDate.setDate(now.getDate());
-   const name = document.getElementById("name");
+   const myname = document.getElementById("name");
    const ingredients = document.getElementById("ingredients");
    const description = document.getElementById("description");
    const lastcook = document.getElementById("lastcook");
    var request = db.transaction(["recipe"], "readwrite")
       .objectStore("recipe")
-      .add({ name: name.value, ingredients: ingredients.value, description: description.value, lastCook: thisDate.toLocaleDateString('en-CA'), rating: 5, favorite: 1, tags: "Midi, vegetarien" });
+      .add({ name: myname.value, 
+         ingredients: ingredients.value, 
+         description: description.value, 
+         lastCook: thisDate.toLocaleDateString('en-CA'), 
+         rating: 5, 
+         favorite: 1, 
+         tags: "Midi, vegetarien" });
 
    request.onsuccess = function (event) {
-      console.log(name.value + " has been added to your database.");
+      console.log(myname.value + " has been added to your database.");
    };
 
    request.onerror = function (event) {
-      console.log("Unable to add data\r\n" + name.value + " already exists in your database! ");
+      console.log("Unable to add data\r\n" + myname.value + " already exists in your database! ");
    }
 }
 
