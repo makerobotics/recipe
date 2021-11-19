@@ -1,55 +1,47 @@
 //prefixes of implementation that we want to test
-window.indexedDB = window.indexedDB || window.mozIndexedDB || 
-window.webkitIndexedDB || window.msIndexedDB;
+window.indexedDB = window.indexedDB || window.mozIndexedDB ||
+   window.webkitIndexedDB || window.msIndexedDB;
 
 //prefixes of window.IDB objects
-window.IDBTransaction = window.IDBTransaction || 
-window.webkitIDBTransaction || window.msIDBTransaction;
-window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || 
-window.msIDBKeyRange
-
-var recipeName = ""
-var selectedRow = 0;
-
-document.addEventListener('DOMContentLoaded', function() {
-   recipeName = document.getElementById("name");
-   //console.log( 'Content was loaded' );
-}, false);
+window.IDBTransaction = window.IDBTransaction ||
+   window.webkitIDBTransaction || window.msIDBTransaction;
+window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange ||
+   window.msIDBKeyRange
 
 if (!window.indexedDB) {
    window.alert("Your browser doesn't support a stable version of IndexedDB.")
 }
 
 const recipeData = [
-//   { name: "first", ingredients: "meet", description: "this", lastCook: "", rating: 0, favorite: 0, tags: "" },
-//   { name: "second", ingredients: "meet2", description: "that", lastCook: "", rating: 0, favorite: 0, tags: "" }
+   //   { name: "first", ingredients: "meet", description: "this", lastCook: "", rating: 0, favorite: 0, tags: "" },
+   //   { name: "second", ingredients: "meet2", description: "that", lastCook: "", rating: 0, favorite: 0, tags: "" }
 ];
 
 var db;
 var request = window.indexedDB.open("newDatabase", 4);
-request.onerror = function(event) {
+request.onerror = function (event) {
    console.log("error: ");
 };
 
-request.onsuccess = function(event) {
+request.onsuccess = function (event) {
    // This is called as the database was opened
    db = request.result;
-   readDataset();   
+   readDataset();
 };
 
-request.onupgradeneeded = function(event) {
+request.onupgradeneeded = function (event) {
    db = event.target.result;
-   var objectStore = db.createObjectStore("recipe", {keyPath: "name"});
-   
+   var objectStore = db.createObjectStore("recipe", { keyPath: "name" });
+
    console.log("onupgradeneeded");
    for (var i in recipeData) {
       objectStore.add(recipeData[i]);
    }
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
    console.log("READY");
-} );
+});
 
 
 function init() {
@@ -61,15 +53,14 @@ function init() {
    document.getElementById("lastcook").value = "";
 }
 
-function readDataset(){
+function readDataset() {
    var objectStore = db.transaction("recipe").objectStore("recipe");
    let dataset = [];
-   console.log("readDataset() - start");
-   objectStore.openCursor().onsuccess = function(event) {
+   //console.log("readDataset() - start");
+   objectStore.openCursor().onsuccess = function (event) {
       // Called each time the cursor was reading a new entry
       var cursor = event.target.result;
-      //console.log("readDataset() - onsuccess");
-   
+
       if (cursor) {
          let line = [];
          line.push(cursor.value.name);
@@ -83,55 +74,53 @@ function readDataset(){
          cursor.continue();
       } else {
          console.log("No more entries!");
-         var t = $('#example').DataTable( {
+         // Now as data is available, we can fill the table
+         var t = $('#example').DataTable({
             data: dataset,
             columns: [
-                { title: "name" },
-                { title: "ingredients" },
-                { title: "description" },
-                { title: "lastCook." },
-                { title: "rating" },
-                { title: "favorite" },
-                { title: "tags" }
+               { title: "name" },
+               { title: "ingredients" },
+               { title: "description" },
+               { title: "lastCook." },
+               { title: "rating" },
+               { title: "favorite" },
+               { title: "tags" }
             ]
-        } );
+         });
 
-        const name = document.getElementById("name");
-        const ingredients = document.getElementById("ingredients");
-        const description = document.getElementById("description");
-        const lastcook = document.getElementById("lastcook");
+         const name = document.getElementById("name");
+         const ingredients = document.getElementById("ingredients");
+         const description = document.getElementById("description");
+         const lastcook = document.getElementById("lastcook");
 
-        $('#addRow').on( 'click', function () {
-         t.row.add( [
-             name.value,
-             ingredients.value,
-             description.value,
-             lastcook.value,
-             "",
-             "",
-             ""
-         ] ).draw( false );
-         // Add data to database
-         add();
-         } );
-         $('#example tbody').on( 'click', 'tr', function () {
-            if ( $(this).hasClass('selected') ) {
-                $(this).removeClass('selected');
+         $('#addRow').on('click', function () {
+            t.row.add([
+               name.value,
+               ingredients.value,
+               description.value,
+               lastcook.value,
+               "",
+               "",
+               ""
+            ]).draw(false);
+            // Add data to database
+            add();
+         });
+         $('#example tbody').on('click', 'tr', function () {
+            if ($(this).hasClass('selected')) {
+               $(this).removeClass('selected');
             }
             else {
-                t.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-                //console.log($(this).find("td:eq(0)").text());
-                //console.log($('tr.selected').find("td:eq(0)").text());
+               t.$('tr.selected').removeClass('selected');
+               $(this).addClass('selected');
             }
-        } );
-     
-        $('#delRow').click( function () {
-            console.log($('tr.selected').find("td:eq(0)").text());
+         });
+
+         $('#delRow').click(function () {
             // Remove selected row from DB
             deleteRow($('tr.selected').find("td:eq(0)").text());
-            t.row('.selected').remove().draw( false );
-        } );
+            t.row('.selected').remove().draw(false);
+         });
       }
    };
 }
@@ -139,11 +128,11 @@ function readDataset(){
 function deleteRow(item) {
    console.log(item);
    var request = db.transaction(["recipe"], "readwrite")
-   .objectStore("recipe")
-   .delete(item);
-   
-   request.onsuccess = function(event) {
-      console.log("entry "+item+" has been removed from your database.");
+      .objectStore("recipe")
+      .delete(item);
+
+   request.onsuccess = function (event) {
+      console.log("entry " + item + " has been removed from your database.");
    };
 }
 
@@ -156,16 +145,15 @@ function add() {
    const description = document.getElementById("description");
    const lastcook = document.getElementById("lastcook");
    var request = db.transaction(["recipe"], "readwrite")
-   .objectStore("recipe")
-   .add({ name: name.value, ingredients: ingredients.value, description: description.value, lastCook: thisDate.toLocaleDateString('en-CA'), rating: 5, favorite: 1, tags: "Midi, vegetarien" });
-   
-   request.onsuccess = function(event) {
-      console.log(name.value+" has been added to your database.");
-      //addRow(recipeName.value, ingredients.value, description.value, lastcook.value);
+      .objectStore("recipe")
+      .add({ name: name.value, ingredients: ingredients.value, description: description.value, lastCook: thisDate.toLocaleDateString('en-CA'), rating: 5, favorite: 1, tags: "Midi, vegetarien" });
+
+   request.onsuccess = function (event) {
+      console.log(name.value + " has been added to your database.");
    };
-   
-   request.onerror = function(event) {
-      console.log("Unable to add data\r\n"+name.value+" already exists in your database! ");
+
+   request.onerror = function (event) {
+      console.log("Unable to add data\r\n" + name.value + " already exists in your database! ");
    }
 }
 
@@ -175,14 +163,14 @@ function exportData() {
    txt_export.value = "[";
    let firstelement = 0;
 
-   objectStore.openCursor().onsuccess = function(event) {
+   objectStore.openCursor().onsuccess = function (event) {
       var cursor = event.target.result;
-      
+
       if (cursor) {
-         if(firstelement == 0){
+         if (firstelement == 0) {
             firstelement = 1;
          }
-         else{
+         else {
             txt_export.value += ",\n";
          }
          txt_export.value += JSON.stringify(cursor.value);
@@ -191,25 +179,25 @@ function exportData() {
          console.log("No more entries!");
          txt_export.value += "]";
       }
-   };  
+   };
 }
 
 function importData() {
    var objectStore = db.transaction("recipe").objectStore("recipe");
    var importstring = document.getElementById("export").value;
-   console.log(importstring);
+   //console.log(importstring);
 
    var obj = JSON.parse(importstring);
 
    var request = db.transaction(["recipe"], "readwrite")
-   .objectStore("recipe")
-   .add(obj[0]);
-   
-   request.onsuccess = function(event) {
-      console.log(recipeName.value+" has been added to your database.");
+      .objectStore("recipe")
+      .add(obj[0]);
+
+   request.onsuccess = function (event) {
+      console.log(obj[0] + " has been added to your database.");
    };
-   
-   request.onerror = function(event) {
-      console.log("Unable to add data\r\n"+recipeName.value+" already exists in your database! ");
+
+   request.onerror = function (event) {
+      console.log("Unable to add data\r\n" + obj[0] + " already exists in your database! ");
    }
 }
