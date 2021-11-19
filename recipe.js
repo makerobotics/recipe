@@ -1,51 +1,49 @@
-//prefixes of implementation that we want to test
-window.indexedDB = window.indexedDB || window.mozIndexedDB ||
-   window.webkitIndexedDB || window.msIndexedDB;
-
-//prefixes of window.IDB objects
-window.IDBTransaction = window.IDBTransaction ||
-   window.webkitIDBTransaction || window.msIDBTransaction;
-window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange ||
-   window.msIDBKeyRange
-
-if (!window.indexedDB) {
-   window.alert("Your browser doesn't support a stable version of IndexedDB.")
-}
-
-const recipeData = [
-   //   { name: "first", ingredients: "meet", description: "this", lastCook: "", rating: 0, favorite: 0, tags: "" },
-   //   { name: "second", ingredients: "meet2", description: "that", lastCook: "", rating: 0, favorite: 0, tags: "" }
-];
-
 var db;
-var request = window.indexedDB.open("newDatabase", 4);
-request.onerror = function (event) {
-   console.log("error: ");
-};
 
-request.onsuccess = function (event) {
-   // This is called as the database was opened
-   db = request.result;
-   readDataset();
-};
-
-request.onupgradeneeded = function (event) {
-   db = event.target.result;
-   var objectStore = db.createObjectStore("recipe", { keyPath: "name" });
-
-   console.log("onupgradeneeded");
-   for (var i in recipeData) {
-      objectStore.add(recipeData[i]);
-   }
-}
-
+// Start here as the document is ready
 $(document).ready(function () {
    console.log("READY");
+
+   init();
+
+   //prefixes of implementation that we want to test
+   window.indexedDB = window.indexedDB || window.mozIndexedDB ||
+      window.webkitIndexedDB || window.msIndexedDB;
+
+   //prefixes of window.IDB objects
+   window.IDBTransaction = window.IDBTransaction ||
+      window.webkitIDBTransaction || window.msIDBTransaction;
+   window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange ||
+      window.msIDBKeyRange
+
+   if (!window.indexedDB) {
+      window.alert("Your browser doesn't support a stable version of IndexedDB.")
+   }
+
+   var request = window.indexedDB.open("newDatabase", 4);
+   request.onerror = function (event) {
+      console.log("error: ");
+   };
+
+   request.onsuccess = function (event) {
+      // This is called as the database was opened
+      db = request.result;
+      readDataset();
+   };
+
+   request.onupgradeneeded = function (event) {
+      db = event.target.result;
+      var objectStore = db.createObjectStore("recipe", { keyPath: "name" });
+
+      console.log("onupgradeneeded");
+      for (var i in recipeData) {
+         objectStore.add(recipeData[i]);
+      }
+   }
 });
 
-
 function init() {
-   console.log("INIT (on load body)");
+   console.log("INIT controls");
    document.getElementById("export").value = "";
    document.getElementById("name").value = "";
    document.getElementById("ingredients").value = "";
@@ -56,7 +54,6 @@ function init() {
 function readDataset() {
    var objectStore = db.transaction("recipe").objectStore("recipe");
    let dataset = [];
-   //console.log("readDataset() - start");
    objectStore.openCursor().onsuccess = function (event) {
       // Called each time the cursor was reading a new entry
       var cursor = event.target.result;
@@ -126,7 +123,6 @@ function readDataset() {
 }
 
 function deleteRow(item) {
-   console.log(item);
    var request = db.transaction(["recipe"], "readwrite")
       .objectStore("recipe")
       .delete(item);
