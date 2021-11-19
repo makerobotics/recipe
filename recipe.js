@@ -1,9 +1,17 @@
 var db;
 var dt;
+var myname, ingredients, description, lastcook, rating, favorite, tags;
 
 // Start here as the document is ready
 $(document).ready(function () {
    console.log("READY");
+   myname = document.getElementById("name");
+   ingredients = document.getElementById("ingredients");
+   description = document.getElementById("description");
+   lastcook = document.getElementById("lastcook");
+   rating = document.getElementById("rating");
+   favorite = document.getElementById("favorite");
+   tags = document.getElementById("tags");
 
    //init();
 
@@ -87,19 +95,11 @@ function readDataset() {
          });
          // Add table callbacks only as table was created
          tableCallbacks();
-
       }
    };
 }
 
 function tableCallbacks(){
-   const myname = document.getElementById("name");
-   const ingredients = document.getElementById("ingredients");
-   const description = document.getElementById("description");
-   const lastcook = document.getElementById("lastcook");
-   const rating = document.getElementById("rating");
-   const favorite = document.getElementById("favorite");
-   const tags = document.getElementById("tags");
 
    $('#addRow').on('click', function () {
       dt.row.add([
@@ -128,8 +128,19 @@ function tableCallbacks(){
       else {
          dt.$('tr.selected').removeClass('selected');
          $(this).addClass('selected');
+         updateControls();
       }
    });
+}
+
+function updateControls(){
+   myname.value = $('tr.selected').find("td:eq(0)").text();
+   ingredients.value = $('tr.selected').find("td:eq(1)").text();
+   description.value = $('tr.selected').find("td:eq(2)").text();
+   lastcook.value = $('tr.selected').find("td:eq(3)").text();
+   rating.value = $('tr.selected').find("td:eq(4)").text();
+   favorite.value = $('tr.selected').find("td:eq(5)").text();
+   tags.value = $('tr.selected').find("td:eq(6)").text();
 }
 
 function deleteRow(item) {
@@ -143,22 +154,18 @@ function deleteRow(item) {
 }
 
 function add() {
-   var now = new Date();
-   var thisDate = new Date();
+   const now = new Date();
+   const thisDate = new Date();
    thisDate.setDate(now.getDate());
-   const myname = document.getElementById("name");
-   const ingredients = document.getElementById("ingredients");
-   const description = document.getElementById("description");
-   const lastcook = document.getElementById("lastcook");
    var request = db.transaction(["recipe"], "readwrite")
       .objectStore("recipe")
       .add({ name: myname.value, 
          ingredients: ingredients.value, 
          description: description.value, 
          lastCook: thisDate.toLocaleDateString('en-CA'), 
-         rating: 5, 
-         favorite: 1, 
-         tags: "Midi, vegetarien" });
+         rating: rating.value, 
+         favorite: favorite.value, 
+         tags: tags.value });
 
    request.onsuccess = function (event) {
       console.log(myname.value + " has been added to your database.");
