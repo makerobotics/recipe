@@ -13,6 +13,7 @@ $(document).ready(function () {
    favorite = document.getElementById("favorite");
    tags = document.getElementById("tags");
 
+   // Initialize controls
    init();
 
    // Control import/export items by checkbox
@@ -40,6 +41,7 @@ $(document).ready(function () {
       window.alert("Your browser doesn't support a stable version of IndexedDB.")
    }
 
+   // Handle database (open and read all data)
    var request = window.indexedDB.open("newDatabase", 4);
    request.onerror = function (event) {
       console.log("error: ");
@@ -48,6 +50,7 @@ $(document).ready(function () {
    request.onsuccess = function (event) {
       // This is called as the database was opened
       db = request.result;
+      // Read data from iDB and fill datatable
       readDataset();
    };
 
@@ -62,11 +65,12 @@ $(document).ready(function () {
    }
 });
 
+// Initialize controls
 function init() {
-   console.log("INIT controls");
    document.getElementById("export").value = "";
 }
 
+// Read data from iDB and fill datatable
 function readDataset() {
    var objectStore = db.transaction("recipe").objectStore("recipe");
    let dataset = [];
@@ -100,12 +104,13 @@ function readDataset() {
                { title: "tags" }
             ]
          });
-         // Add table callbacks only as table was created
+         // Add table callbacks (button and click events) only as table was created
          tableCallbacks();
       }
    };
 }
 
+// Add table callbacks (button and click events) only as table was created
 function tableCallbacks() {
 
    $('#addRow').on('click', function () {
@@ -130,7 +135,6 @@ function tableCallbacks() {
 
    $('#saveRow').click(function () {
       // Update selected row from DB
-      console.log("Updated");
       let r = dt.row('.selected').data();
       r[0] = myname.value;
       r[1] = ingredients.value;
@@ -155,6 +159,7 @@ function tableCallbacks() {
    });
 }
 
+// Update controls (get table values if row is clicked)
 function updateControls() {
    myname.value = $('tr.selected').find("td:eq(0)").text();
    ingredients.value = $('tr.selected').find("td:eq(1)").text();
@@ -165,6 +170,7 @@ function updateControls() {
    tags.value = $('tr.selected').find("td:eq(6)").text();
 }
 
+// Delete a table row
 function deleteRow(item) {
    var request = db.transaction(["recipe"], "readwrite")
       .objectStore("recipe")
@@ -175,6 +181,7 @@ function deleteRow(item) {
    };
 }
 
+// Update a table row
 function update() {
    const now = new Date();
    const thisDate = new Date();
@@ -200,6 +207,7 @@ function update() {
    }
 }
 
+// Add a table row
 function add() {
    const now = new Date();
    const thisDate = new Date();
@@ -253,8 +261,6 @@ function exportData() {
 function importData() {
    var objectStore = db.transaction("recipe").objectStore("recipe");
    var importstring = document.getElementById("export").value;
-   //console.log(importstring);
-
    var obj = JSON.parse(importstring);
 
    var request = db.transaction(["recipe"], "readwrite")
