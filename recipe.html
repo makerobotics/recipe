@@ -39,20 +39,23 @@
         <br>
         <textarea id="tags" name="tags" rows="1" cols="50"></textarea>
         <br>
-        
+
         <button id="addRow">Add data </button>
         <button id="delRow">Delete data </button>
+        <button id="saveRow">Save data </button>
     </div>
 	
 	<br><br>
     <table id="example" class="display" width="100%"></table>
     <br><br>
     <br>
-    <label for="export">import/export:</label>
-    <br>
-    <textarea id="export" name="export" rows="4" cols="50"></textarea>
-    <br>
-    <button onclick = "importData()">Import data </button>
-    <button onclick = "exportData()">Export data </button> 
+    <input type="checkbox" class="checkbutton"> Import/Export
+    <div class="importexport">
+        <br>
+        <textarea id="export" name="export" rows="4" cols="50"></textarea>
+        <br>
+        <button onclick = "importData()">Import data </button>
+        <button onclick = "exportData()">Export data </button> 
+    </div>
 </body>
 </html>

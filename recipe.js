@@ -13,7 +13,18 @@ $(document).ready(function () {
    favorite = document.getElementById("favorite");
    tags = document.getElementById("tags");
 
-   //init();
+   init();
+
+   // Control import/export items by checkbox
+   $(".checkbutton").change(function () {
+      if (this.checked) {
+         //I am checked
+         $('.importexport').show();
+      } else {
+         //I'm not checked
+         $('.importexport').hide();
+      }
+   });
 
    //prefixes of implementation that we want to test
    window.indexedDB = window.indexedDB || window.mozIndexedDB ||
@@ -54,10 +65,6 @@ $(document).ready(function () {
 function init() {
    console.log("INIT controls");
    document.getElementById("export").value = "";
-   document.getElementById("name").value = "";
-   document.getElementById("ingredients").value = "";
-   document.getElementById("description").value = "";
-   document.getElementById("lastcook").value = "";
 }
 
 function readDataset() {
@@ -99,7 +106,7 @@ function readDataset() {
    };
 }
 
-function tableCallbacks(){
+function tableCallbacks() {
 
    $('#addRow').on('click', function () {
       dt.row.add([
@@ -114,13 +121,28 @@ function tableCallbacks(){
       // Add data to database
       add();
    });
-   
+
    $('#delRow').click(function () {
       // Remove selected row from DB
       deleteRow($('tr.selected').find("td:eq(0)").text());
       dt.row('.selected').remove().draw(false);
    });
-   
+
+   $('#saveRow').click(function () {
+      // Update selected row from DB
+      console.log("Updated");
+      let r = dt.row('.selected').data();
+      r[0] = myname.value;
+      r[1] = ingredients.value;
+      r[2] = description.value;
+      r[3] = lastcook.value;
+      r[4] = rating.value;
+      r[5] = favorite.value;
+      r[6] = tags.value;
+      dt.row('.selected').data(r).draw(false);
+      update();
+   });
+
    $('#example tbody').on('click', 'tr', function () {
       if ($(this).hasClass('selected')) {
          $(this).removeClass('selected');
@@ -133,7 +155,7 @@ function tableCallbacks(){
    });
 }
 
-function updateControls(){
+function updateControls() {
    myname.value = $('tr.selected').find("td:eq(0)").text();
    ingredients.value = $('tr.selected').find("td:eq(1)").text();
    description.value = $('tr.selected').find("td:eq(2)").text();
@@ -153,19 +175,46 @@ function deleteRow(item) {
    };
 }
 
+function update() {
+   const now = new Date();
+   const thisDate = new Date();
+   thisDate.setDate(now.getDate());
+   var request = db.transaction(["recipe"], "readwrite")
+      .objectStore("recipe")
+      .put({
+         name: myname.value,
+         ingredients: ingredients.value,
+         description: description.value,
+         lastCook: thisDate.toLocaleDateString('en-CA'),
+         rating: rating.value,
+         favorite: favorite.value,
+         tags: tags.value
+      });
+
+   request.onsuccess = function (event) {
+      console.log(myname.value + " has been updated in your database.");
+   };
+
+   request.onerror = function (event) {
+      console.log("Unable to update data\r\n" + myname.value + " already exists in your database! ");
+   }
+}
+
 function add() {
    const now = new Date();
    const thisDate = new Date();
    thisDate.setDate(now.getDate());
    var request = db.transaction(["recipe"], "readwrite")
       .objectStore("recipe")
-      .add({ name: myname.value, 
-         ingredients: ingredients.value, 
-         description: description.value, 
-         lastCook: thisDate.toLocaleDateString('en-CA'), 
-         rating: rating.value, 
-         favorite: favorite.value, 
-         tags: tags.value });
+      .add({
+         name: myname.value,
+         ingredients: ingredients.value,
+         description: description.value,
+         lastCook: thisDate.toLocaleDateString('en-CA'),
+         rating: rating.value,
+         favorite: favorite.value,
+         tags: tags.value
+      });
 
    request.onsuccess = function (event) {
       console.log(myname.value + " has been added to your database.");
