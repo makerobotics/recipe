@@ -4,7 +4,6 @@ var myname, ingredients, description, lastcook, rating, favorite, tags;
 
 // Start here as the document is ready
 $(document).ready(function () {
-   console.log("READY");
    myname = document.getElementById("name");
    ingredients = document.getElementById("ingredients");
    description = document.getElementById("description");
@@ -67,7 +66,20 @@ $(document).ready(function () {
 
 // Initialize controls
 function init() {
+   const now = new Date();
+   const thisDate = new Date();
+   thisDate.setDate(now.getDate());
+   
+   myname.value = "";
+   ingredients.value = "";
+   description.value = "";
+   lastcook.value = thisDate.toLocaleDateString('en-CA');
+   rating.value = "";
+   favorite.value = "";
+   tags.value = "";
+
    document.getElementById("export").value = "";
+   $('.importexport').hide();
 }
 
 // Read data from iDB and fill datatable
@@ -90,7 +102,7 @@ function readDataset() {
          dataset.push(line);
          cursor.continue();
       } else {
-         console.log("No more entries!");
+         //console.log("No more entries!");
          // Now as data is available, we can fill the table
          dt = $('#example').DataTable({
             data: dataset,
@@ -131,6 +143,11 @@ function tableCallbacks() {
       // Remove selected row from DB
       deleteRow($('tr.selected').find("td:eq(0)").text());
       dt.row('.selected').remove().draw(false);
+   });
+
+   $('#cleanRow').click(function () {
+      // Clear form
+      init();
    });
 
    $('#saveRow').click(function () {
