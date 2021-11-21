@@ -56,6 +56,9 @@ $(document).ready(function () {
    request.onupgradeneeded = function (event) {
       db = event.target.result;
       var objectStore = db.createObjectStore("recipe", { keyPath: "name" });
+      const recipeData = [
+         { name: "Dummy", ingredients: "", description: "", lastcook: "", rating: 0, favorite: 0, tags: "" }
+      ];
 
       console.log("onupgradeneeded");
       for (var i in recipeData) {
@@ -69,7 +72,7 @@ function init() {
    const now = new Date();
    const thisDate = new Date();
    thisDate.setDate(now.getDate());
-   
+
    myname.value = "";
    ingredients.value = "";
    description.value = "";
@@ -95,7 +98,7 @@ function readDataset() {
          line.push(cursor.value.name);
          line.push(cursor.value.ingredients);
          line.push(cursor.value.description);
-         line.push(cursor.value.lastCook);
+         line.push(cursor.value.lastcook);
          line.push(cursor.value.rating);
          line.push(cursor.value.favorite);
          line.push(cursor.value.tags);
@@ -209,7 +212,7 @@ function update() {
          name: myname.value,
          ingredients: ingredients.value,
          description: description.value,
-         lastCook: thisDate.toLocaleDateString('en-CA'),
+         lastcook: thisDate.toLocaleDateString('en-CA'),
          rating: rating.value,
          favorite: favorite.value,
          tags: tags.value
@@ -235,7 +238,7 @@ function add() {
          name: myname.value,
          ingredients: ingredients.value,
          description: description.value,
-         lastCook: thisDate.toLocaleDateString('en-CA'),
+         lastcook: thisDate.toLocaleDateString('en-CA'),
          rating: rating.value,
          favorite: favorite.value,
          tags: tags.value
@@ -280,9 +283,19 @@ function importData() {
    var importstring = document.getElementById("export").value;
    var obj = JSON.parse(importstring);
 
-   var request = db.transaction(["recipe"], "readwrite")
-      .objectStore("recipe")
-      .add(obj[0]);
+   var request = db.transaction(["recipe"], "readwrite").objectStore("recipe");
+   for (let key in obj) {
+      console.log(obj[key].name);
+      request.add({
+         name: obj[key].name,
+         ingredients: obj[key].ingredients,
+         description: obj[key].description,
+         lastcook: obj[key].lastcook,
+         rating: obj[key].rating,
+         favorite: obj[key].favorite,
+         tags: obj[key].tags
+      });
+   };
 
    request.onsuccess = function (event) {
       console.log(obj[0] + " has been added to your database.");
