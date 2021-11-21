@@ -81,6 +81,7 @@ function init() {
    favorite.value = "";
    tags.value = "";
 
+   document.getElementById("check").checked = false;
    document.getElementById("export").value = "";
    $('.importexport').hide();
 }
