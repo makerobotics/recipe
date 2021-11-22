@@ -213,7 +213,7 @@ function update() {
          name: myname.value,
          ingredients: ingredients.value,
          description: description.value,
-         lastcook: thisDate.toLocaleDateString('en-CA'),
+         lastcook: lastcook.value,
          rating: rating.value,
          favorite: favorite.value,
          tags: tags.value
