@@ -285,6 +285,9 @@ function importData() {
    var obj = JSON.parse(importstring);
 
    var request = db.transaction(["recipe"], "readwrite").objectStore("recipe");
+   // Clear all the database before importing new data
+   request.clear();
+   // Import each row from JSON file
    for (let key in obj) {
       console.log(obj[key].name);
       request.add({
