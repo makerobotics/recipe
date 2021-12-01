@@ -26,6 +26,17 @@ $(document).ready(function () {
       }
    });
 
+   // Control compact view by checkbox
+   $(".checkcompact").change(function () {
+      if (this.checked) {
+         //I am checked
+         $('.compact').hide();
+      } else {
+         //I'm not checked
+         $('.compact').show();
+      }
+   });
+
    //prefixes of implementation that we want to test
    window.indexedDB = window.indexedDB || window.mozIndexedDB ||
       window.webkitIndexedDB || window.msIndexedDB;
@@ -82,8 +93,10 @@ function init() {
    tags.value = "";
 
    document.getElementById("check").checked = false;
+   document.getElementById("compact").checked = true;
    document.getElementById("export").value = "";
    $('.importexport').hide();
+   $('.compact').hide();
 }
 
 // Read data from iDB and fill datatable
@@ -166,6 +179,13 @@ function tableCallbacks() {
       r[6] = tags.value;
       dt.row('.selected').data(r).draw(false);
       update();
+   });
+
+   $('#Today').click(function(){
+      const now = new Date();
+      const thisDate = new Date();
+      thisDate.setDate(now.getDate());
+      lastcook.value = thisDate.toLocaleDateString('en-CA');
    });
 
    $('#example tbody').on('click', 'tr', function () {
