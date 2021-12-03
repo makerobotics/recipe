@@ -19,10 +19,12 @@ $(document).ready(function () {
    $(".checkbutton").change(function () {
       if (this.checked) {
          //I am checked
-         $('.importexport').show();
+         //$('.importexport').show(); // not working on mobile devices
+         $('.importexport').css('display', 'block');
       } else {
          //I'm not checked
-         $('.importexport').hide();
+         //$('.importexport').hide(); // not working on mobile devices
+         $('.importexport').css('display', 'none');
       }
    });
 
@@ -30,10 +32,16 @@ $(document).ready(function () {
    $(".checkcompact").change(function () {
       if (this.checked) {
          //I am checked
-         $('.compact').hide();
+         //$('.compact').hide(); // not working on mobile devices
+         $('.compact').css('display', 'none');
+         //dt.column(2).visible(false);
+         compactView(dt, false);
       } else {
          //I'm not checked
-         $('.compact').show();
+         //$('.compact').show(); // not working on mobile devices
+         $('.compact').css('display', 'block');
+         //dt.column(2).visible(true);
+         compactView(dt, true);
       }
    });
 
@@ -77,6 +85,13 @@ $(document).ready(function () {
       }
    }
 });
+
+function compactView(table, status){
+   table.column('description:name').visible(status);
+   table.column('lastcook:name').visible(status);
+   table.column('rating:name').visible(status);
+   table.column('favorite:name').visible(status);
+}
 
 // Initialize controls
 function init() {
@@ -124,17 +139,18 @@ function readDataset() {
          dt = $('#example').DataTable({
             data: dataset,
             columns: [
-               { title: "name" },
-               { title: "ingredients" },
-               { title: "description" },
-               { title: "lastCook." },
-               { title: "rating" },
-               { title: "favorite" },
-               { title: "tags" }
+               { title: "Name", name: "name" },
+               { title: "Ingredients", name: "ingredients" },
+               { title: "Description", name:"description" },
+               { title: "Last Cook", name: "lastcook" },
+               { title: "Rating", name: "rating" },
+               { title: "Favorite", name: "favorite" },
+               { title: "Tags", name: "tags" }
             ]
          });
          // Add table callbacks (button and click events) only as table was created
          tableCallbacks();
+         compactView(dt, false);
       }
    };
 }
